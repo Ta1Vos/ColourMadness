@@ -26,17 +26,20 @@ let returnButton;
 //Sends to the game and loads the right level
 function handleclick(buttonNumber) {
     localStorage.setItem('CcurrentMdata', buttonNumber);
-    window.location = `/game.html`;
+    const currentUrl = location.host;
+    window.location.href = `http://${currentUrl}/ColourMadness/game.html`;
 }
 
 //Loads the home page
 function backToHome() {
-    window.location = `/index.html`;
+    const currentUrl = location.host;
+    window.location.href = `http://${currentUrl}/ColourMadness/index.html`;
+    return false;
 }
 
 function preload() {
-    this.load.image('play-button', '/assets/title/play-button.png');
-    this.load.image('return-button', '/assets/title/return-button.png');
+    this.load.image('play-button', 'assets/title/play-button.png');
+    this.load.image('return-button', 'assets/title/return-button.png');
 }
 
 function create() {

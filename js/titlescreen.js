@@ -30,29 +30,29 @@ let playButton;
 function startGame() {
     //Directs player to the newest level
     localStorage.setItem('CcurrentMdata', localStorage.getItem('ClevelMdata'));
-    window.location = `/game.html`;
+    window.location = `game.html`;
 }
 
 //Sends you to the level menu
 function sendToLevelMenu() {
-    window.location = `/levelmenu.html`;
+    window.location = `levelmenu.html`;
 }
 
 function preload() {
-    this.load.image('title-C', '/assets/title/title-C.png');
-    this.load.image('title-O', '/assets/title/title-O.png');
-    this.load.image('title-L', '/assets/title/title-L.png');
-    this.load.image('title-U', '/assets/title/title-U.png');
-    this.load.image('title-R', '/assets/title/title-R.png');
-    this.load.image('title-M', '/assets/title/title-M.png');
-    this.load.image('title-A', '/assets/title/title-A.png');
-    this.load.image('title-D', '/assets/title/title-D.png');
-    this.load.image('title-N', '/assets/title/title-N.png');
-    this.load.image('title-E', '/assets/title/title-E.png');
-    this.load.image('title-S', '/assets/title/title-S.png');
+    this.load.image('title-C', 'assets/title/title-C.png');
+    this.load.image('title-O', 'assets/title/title-O.png');
+    this.load.image('title-L', 'assets/title/title-L.png');
+    this.load.image('title-U', 'assets/title/title-U.png');
+    this.load.image('title-R', 'assets/title/title-R.png');
+    this.load.image('title-M', 'assets/title/title-M.png');
+    this.load.image('title-A', 'assets/title/title-A.png');
+    this.load.image('title-D', 'assets/title/title-D.png');
+    this.load.image('title-N', 'assets/title/title-N.png');
+    this.load.image('title-E', 'assets/title/title-E.png');
+    this.load.image('title-S', 'assets/title/title-S.png');
 
-    this.load.image('play-button', '/assets/title/play-button.png');
-    this.load.image('levels-button', '/assets/title/levels-button.png');
+    this.load.image('play-button', 'assets/title/play-button.png');
+    this.load.image('levels-button', 'assets/title/levels-button.png');
 }
 
 function create() {

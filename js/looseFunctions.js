@@ -223,7 +223,8 @@ function endLevel() {
                 localStorage.setItem('ClevelMdata', maps[cML].level + 1);
             }
 
-            window.location = '/index.html';
+            const currentUrl = location.host;
+            window.location.href = `http://${currentUrl}/ColourMadness`;
         }
     }
 }
