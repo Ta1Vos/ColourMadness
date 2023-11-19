@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Making your first Phaser 3 Game - Part 1</title>
+    <script src="//cdn.jsdelivr.net/npm/phaser@3.11.0/dist/phaser.js"></script>
+    <style type="text/css">
+        body {
+            margin: 0;
+            margin-top:10vh;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    
+    <script type="text/javascript">
+
+        let config = {
+            type: Phaser.AUTO,
+            width: 800,
+            height: 600,
+            physics: {
+                default: 'arcade',
+                arcade: {
+                    gravity: { y: 300 },
+                    debug: false
+                }
+            },
+            scene: {
+                preload: preload,
+                create: create,
+                update: update
+            }
+        };
+
+        let cursors;
+        let platforms;
+        let player;
+        let stars;
+        let bombLevel = 0;
+
+        let jumpPower = -330;
+        let playerVelocity = 160;
+        let playerHit = false;
+
+        let score = 0;
+        let scoreText;
+        let lives = 3;
+        let livesText;
+
+        let game = new Phaser.Game(config);
+
+        function preload() {
+            this.load.image('sky', 'assets/sky.png');
+            this.load.image('ground', 'assets/platform.png');
+            this.load.image('star', 'assets/star.png');
+            this.load.image('bomb', 'assets/bomb.png');
+            this.load.spritesheet('dude',
+                'assets/dude.png',
+                { frameWidth: 32, frameHeight: 48 }
+            );
+        }
+
+        function create() {
+            //Code beneath loads the world in
+            this.add.image(400, 300, 'sky');
+
+            //Score loader
+            scoreText = this.add.text(16, 16, 'score: 0', { fontSize: '32px', fill: '#000' });
+            livesText = this.add.text(620, 16, 'lives: 3', { fontSize: '32px', fill: '#000' });
+
+            platforms = this.physics.add.staticGroup();
+
+            platforms.create(400, 568, 'ground').setScale(2).refreshBody();
+
+            platforms.create(600, 400, 'ground');
+            platforms.create(50, 250, 'ground');
+            platforms.create(750, 220, 'ground');
+
+            //Code beneath loads the player in
+            player = this.physics.add.sprite(100, 450, 'dude');
+
+            player.setBounce(0.2);
+            player.setCollideWorldBounds(true);
+
+            //Code beneath is the animation for the player
+            this.anims.create({
+                key: 'left',
+                frames: this.anims.generateFrameNumbers('dude', { start: 0, end: 3 }),
+                frameRate: 10,
+                repeat: -1
+            });
+
+            this.anims.create({
+                key: 'turn',
+                frames: [{ key: 'dude', frame: 4 }],
+                frameRate: 20
+            });
+
+            this.anims.create({
+                key: 'right',
+                frames: this.anims.generateFrameNumbers('dude', { start: 5, end: 8 }),
+                frameRate: 10,
+                repeat: -1
+            });
+
+            //Checks for collision inbetween the player and the platforms
+            this.physics.add.collider(player, platforms);
+
+            //Create the starts
+            stars = this.physics.add.group({
+                key: 'star',
+                repeat: 5,
+                setXY: { x: 50, y: 0, stepX: 140 }
+            });
+
+            stars.children.iterate(function (child) {
+                child.setBounceY(Phaser.Math.FloatBetween(0.4, 0.9));
+                child.setCollideWorldBounds(true);
+                child.setVelocity(0, 20);
+            });
+
+            //Checks for collision inbetween the stars and the platforms
+            this.physics.add.collider(stars, platforms);
+            this.physics.add.collider(stars, stars);
+            //Checks for collision inbetween stars and the player, upon collision it will execute collectStar
+            this.physics.add.overlap(player, stars, collectStar, null, this);
+
+            //Create the bombs
+            bombs = this.physics.add.group();
+
+            //Checks for collision inbetween the bombs and the platforms
+            this.physics.add.collider(bombs, platforms);
+            //Collision detector for bombs
+            this.physics.add.collider(bombs, bombs);
+            //Checks for collision inbetween the bombs and the player, upon collision it will execute hitBomb
+            this.physics.add.collider(player, bombs, hitBomb, null, this);
+        }
+
+        function update() {
+            cursors = this.input.keyboard.createCursorKeys();
+            //Movement for the player
+            if (cursors.shift.isDown) {
+                playerVelocity = 275;
+                jumpPower = -225;
+            } else {
+                playerVelocity = 160;
+                jumpPower = -330;
+            }
+
+            if (cursors.left.isDown) {
+                player.setVelocityX(-playerVelocity);
+
+                player.anims.play('left', true);
+            }
+            else if (cursors.right.isDown) {
+                player.setVelocityX(playerVelocity);
+
+                player.anims.play('right', true);
+            }
+            else {
+                player.setVelocityX(0);
+
+                player.anims.play('turn');
+            }
+
+            if (cursors.up.isDown && player.body.touching.down) {
+                player.setVelocityY(jumpPower);
+            }
+        }
+
+        function collectStar(player, star) {
+            star.disableBody(true, true);
+
+            score += 1;
+            scoreText.setText('Score: ' + score);
+
+            //countActive checks how many objects are still visible/in-game
+            if (stars.countActive(true) === 0) {
+                stars.children.iterate(function (child) {
+                    //Reset the star position
+                    child.enableBody(true, Phaser.Math.Between(0, 800), Phaser.Math.Between(0, 300), true, true);
+                });
+
+                //Create a bomb
+                //Set a location for the bomb
+                if (bombLevel < 6) {
+                    let x = (player.x < 400) ? Phaser.Math.Between(400, 800) : Phaser.Math.Between(0, 400);
+
+                    let bomb = bombs.create(x, 16, 'bomb').setScale(1 + bombLevel / 6);
+                    bomb.setBounce(1);
+                    bomb.setCollideWorldBounds(true);
+                    bomb.setVelocity(Phaser.Math.Between(-120 + bombLevel * 10, 120 - bombLevel * 10), 20);
+                }
+
+                bombLevel++;
+            }
+            if (bombLevel >= 6) {
+                if (score % 6 == 0) {
+                    let x = (player.x < 400) ? Phaser.Math.Between(400, 800) : Phaser.Math.Between(0, 400);
+
+                    let bomb = bombs.create(x, 16, 'bomb').setScale(1 + bombLevel / 10);
+                    bomb.setBounce(1);
+                    bomb.setCollideWorldBounds(true);
+                    bomb.setVelocity(Phaser.Math.Between(-400, 400), 20);
+                    bombLevel++;
+                }
+            }
+
+            if (score % 20 == 0) {
+                lives++;
+                livesText.setText('lives: ' + lives);
+            }
+        }
+
+        function hitBomb(player, bomb) {
+            if (playerHit == false) {
+                let playerLocation = player.x;
+
+                playerHit = true;
+
+                player.setTint(0xff0000);
+                bomb.disableBody(true, true);
+
+                lives--;
+                livesText.setText('lives: ' + lives);
+
+                player.x = playerLocation;
+                if (lives <= 0) {
+                    this.physics.pause();
+                    setTimeout(() => {
+                        player.setTint(0);
+                    }, 1000);
+                } else {
+                    setTimeout(() => {
+                    player.setTint(0xffffff);
+                    playerHit = false;
+                }, 1000);
+                }
+
+                player.anims.play('turn');
+            }
+        }
+
+    </script>
+
+</body>
+
+</html>
