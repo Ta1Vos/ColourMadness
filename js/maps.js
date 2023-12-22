@@ -16,6 +16,7 @@ List of types of tiles:
 13 = Corner down left
 14 = Upper stop
 15 = Down stop
+Add "g" to a number to turn it into a glitched tile.
 */
 
 // Button & Door template: [type, location X in array, location Y in array, triggered(true/false)]
@@ -123,7 +124,7 @@ const maps = [
             ['08', '01', '01', '13', '00', '02', '00', '00'],
             ['02', '00', '00', '10', '01', '07', '00', '00'],
             ['02', '00', '00', '00', '00', '02', '00', '00'],
-            ['10', '01', '04', '00', '00', '15', '00', '00'],
+            ['10', '01', '04', '00', '00', 'g15', '00', '00'],
         ],
         camera: {
             follow: false,

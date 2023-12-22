@@ -13,6 +13,11 @@ let blockDirections = {
 };
 let cursors;
 
+//Special variables
+let largestXCol = 0;
+let largestYCol = 0;
+let glitchedTilesPresent = false;
+
 //Tiles
 let tileHorizontal;
 let tileVertical;

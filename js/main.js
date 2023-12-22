@@ -62,6 +62,7 @@ function create() {
     cornerDownRight = this.physics.add.staticGroup();
     cornerUpLeft = this.physics.add.staticGroup();
     cornerDownLeft = this.physics.add.staticGroup();
+
     //Special tiles
     enemyTiles = this.add.group();
     //Special parts
@@ -76,60 +77,89 @@ function create() {
     //Map loader
     for (let i = 0; i < currentMap.tiles.length; i++) {
         const row = currentMap.tiles[i];
+
+        //Replaces largest Y col value if a larger one has been found
+        if (i > largestYCol) {
+            largestYCol = i;
+            console.log(`replace i? ${i}`);
+        }
         for (let x = 0; x < row.length; x++) {
-            const number = parseInt(row[x]);
+            let number = row[x];
+            let glitched = false;
+
+            if (number.includes("g")) {//If glitched is included
+                glitched = true;
+                number = number.replace("g", "");//Remove the g after glitched has been found
+            }
+            //Replaces largest X col value if a larger one has been found
+            if (row.length > largestXCol) {
+                largestXCol = x;
+                console.log(`replace x? ${x}`);
+            }
+
+            number = parseInt(number);
+
             if (number != 0) {
                 // p = position
                 const pX = calculateScale(x);
                 const pY = calculateScale(i);
+                let tile;
 
                 //This grabs the requested position, grabs an asset from the tile array and places them in the right location.
                 switch (number) {
                     case 1:
-                        tileHorizontal.create(pX, pY, pathArray[number]);
+                        tile = tileHorizontal.create(pX, pY, pathArray[number]);
                         break;
                     case 2:
-                        tileVertical.create(pX, pY, pathArray[number]);
+                        tile = tileVertical.create(pX, pY, pathArray[number]);
                         break;
                     case 3:
-                        tileLeftStop.create(pX, pY, pathArray[number]);
+                        tile = tileLeftStop.create(pX, pY, pathArray[number]);
                         break;
                     case 4:
-                        tileRightStop.create(pX, pY, pathArray[number]);
+                        tile = tileRightStop.create(pX, pY, pathArray[number]);
                         break;
                     case 5:
-                        tile1x1Up.create(pX, pY, pathArray[number]);
+                        tile = tile1x1Up.create(pX, pY, pathArray[number]);
                         break;
                     case 6:
-                        tile1x1Down.create(pX, pY, pathArray[number]);
+                        tile = tile1x1Down.create(pX, pY, pathArray[number]);
                         break;
                     case 7:
-                        tile1x1Right.create(pX, pY, pathArray[number]);
+                        tile = tile1x1Right.create(pX, pY, pathArray[number]);
                         break;
                     case 8:
-                        tile1x1Left.create(pX, pY, pathArray[number]);
+                        tile = tile1x1Left.create(pX, pY, pathArray[number]);
                         break;
                     case 9:
-                        tile1x1.create(pX, pY, pathArray[number]);
+                        tile = tile1x1.create(pX, pY, pathArray[number]);
                         break;
                     case 10:
-                        cornerUpRight.create(pX, pY, pathArray[number]);
+                        tile = cornerUpRight.create(pX, pY, pathArray[number]);
                         break;
                     case 11:
-                        cornerDownRight.create(pX, pY, pathArray[number]);
+                        tile = cornerDownRight.create(pX, pY, pathArray[number]);
                         break;
                     case 12:
-                        cornerUpLeft.create(pX, pY, pathArray[number]);
+                        tile = cornerUpLeft.create(pX, pY, pathArray[number]);
                         break;
                     case 13:
-                        cornerDownLeft.create(pX, pY, pathArray[number]);
+                        tile = cornerDownLeft.create(pX, pY, pathArray[number]);
                         break;
                     case 14:
-                        tileUpStop.create(pX, pY, pathArray[number]);
+                        tile = tileUpStop.create(pX, pY, pathArray[number]);
                         break;
                     case 15:
-                        tileDownStop.create(pX, pY, pathArray[number]);
+                        tile = tileDownStop.create(pX, pY, pathArray[number]);
                         break;
+                }
+
+                if (glitched) {
+                    tile.setTintFill(0x444444);
+                    tile.body.enable = false;
+                    glitchedTilesPresent = true;
+                } else {
+                    tile.setTint(0x000000);
                 }
             }
         }
@@ -196,7 +226,7 @@ function create() {
 
             const sprite = this.physics.add.sprite(pX, pY, buttonArray[buttonType]).setScale(levelScale);
 
-            //Assiging the map load properties to the button
+            //Assigning the map load properties to the button
             sprite.gameObject = currentButton;
             //Switching functions/colors of the button
             switch (buttonType) {
@@ -395,8 +425,14 @@ function create() {
     updateTimerCount();
 }
 
+console.log(largestXCol);
+console.log(largestYCol);
+
 function update() {
     //Checks for keyboard input from the player
     movementDetection();
 
-    animationFrames();}
+    animationFrames();
+
+    mapBoundaryChecker();
+}

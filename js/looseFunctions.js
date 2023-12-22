@@ -352,3 +352,18 @@ function updateTimerCount() {
         }, 15);
     }
 }
+
+function mapBoundaryChecker() {
+    if (!glitchedTilesPresent) {
+        if ((player.y > calculateScale(largestYCol) || player.y < calculateScale(0)) ||
+            (player.x > calculateScale(largestXCol) || player.x < calculateScale(0))) {
+            playerIsDead = true;
+        }
+    } else {
+        if ((player.y > calculateScale(largestYCol) * 2 || player.y < calculateScale(0) / 2) ||
+            (player.x > calculateScale(largestXCol) * 2 || player.x < calculateScale(0) / 2)) {
+            playerIsDead = true;
+            console.log("Secret, oOoOOOoooO");
+        }
+    }
+}
