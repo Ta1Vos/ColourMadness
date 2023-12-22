@@ -77,7 +77,7 @@ function create() {
     for (let i = 0; i < currentMap.tiles.length; i++) {
         const row = currentMap.tiles[i];
         for (let x = 0; x < row.length; x++) {
-            const number = row[x];
+            const number = parseInt(row[x]);
             if (number != 0) {
                 // p = position
                 const pX = calculateScale(x);
