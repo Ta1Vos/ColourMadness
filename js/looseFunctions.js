@@ -224,7 +224,7 @@ function endLevel() {
             }
 
             const currentUrl = location.host;
-            window.location.href = `http://${currentUrl}/ColourMadness`;
+            window.location.href = `http://${currentUrl}`;
         }
     }
 }

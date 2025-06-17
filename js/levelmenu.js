@@ -27,13 +27,13 @@ let returnButton;
 function handleclick(buttonNumber) {
     localStorage.setItem('CcurrentMdata', buttonNumber);
     const currentUrl = location.host;
-    window.location.href = `http://${currentUrl}/ColourMadness/game.html`;
+    window.location.href = `http://${currentUrl}/game.html`;
 }
 
 //Loads the home page
 function backToHome() {
     const currentUrl = location.host;
-    window.location.href = `http://${currentUrl}/ColourMadness/index.html`;
+    window.location.href = `http://${currentUrl}/index.html`;
     return false;
 }
 
